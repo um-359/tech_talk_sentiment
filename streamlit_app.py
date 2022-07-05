@@ -20,9 +20,11 @@ if __name__ == "__main__":
     if starting_text:
 
         with st.spinner('Running model...'):
-            sentiments, scores = sentiment_model.predict(
+            sentiments, scores = sentiment_model.predict_sentiment(
                 starting_text)
 
         st.markdown(f"""
         Sentiment: {sentiments[0]}
+
+        Score: {scores[0]}
         """)
