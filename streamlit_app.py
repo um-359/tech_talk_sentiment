@@ -6,7 +6,8 @@ import streamlit as st
 import numpy as np
 import os
 
-sentiment_model = Sentiment("sentiment_model")
+sentiment_model = Sentiment(
+    f"cardiffnlp/twitter-roberta-base-sentiment-latest")
 
 if __name__ == "__main__":
 
