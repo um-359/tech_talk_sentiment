@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import numpy as np
 import torch
@@ -8,9 +9,12 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 class Sentiment:
     def __init__(self, model_path):
-        self.sentiment_mapping = {"LABEL_0": "Negative", "LABEL_1": "Neutral", "LABEL_2": "Positive"}
+        self.sentiment_mapping = {"LABEL_0": "Negative",
+                                  "LABEL_1": "Neutral",
+                                  "LABEL_2": "Positive"}
         self.category2score_map = {"Negative": -1, "Neutral": 0, "Positive": 1}
-        self.model = AutoModelForSequenceClassification.from_pretrained(model_path)
+        self.model = AutoModelForSequenceClassification.from_pretrained(
+            model_path)
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.tweet_sentiment = pipeline('sentiment-analysis',
                                         model=self.model,
@@ -18,6 +22,7 @@ class Sentiment:
                                         framework="pt",
                                         return_all_scores=True
                                         )
+        os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
     def sentiment_standardizer(self, sentiments, scores):
         """
@@ -28,7 +33,8 @@ class Sentiment:
         scores: list
         Returns: standardized_score (list)
         """
-        standardized_scores = [min(max(-0.5, score), 0.2) if sentiment == 'Neutral' else score for sentiment, score in zip(sentiments, scores)]
+        standardized_scores = [min(max(-0.5, score), 0.2) if sentiment ==
+                               'Neutral' else score for sentiment, score in zip(sentiments, scores)]
         return standardized_scores
 
     def predict_sentiment(self, tweet):
@@ -45,7 +51,6 @@ class Sentiment:
         results = [{predicted_sentiments[i][label]["label"]:
                     predicted_sentiments[i][label]["score"] for label in np.arange(3)} for i in np.arange(n_tweets)]
 
-        print(results)
         scores = [sum([results[i][k] * v for k, v in self.category2score_map.items()])
                   for i in np.arange(n_tweets)]
         sentiments = [max(results[i], key=results[i].get)
