@@ -47,6 +47,18 @@ def sentiment_standardizer(sentiments, scores):
     return standardized_scores
 
 
+def sentiment_calculator(scores):
+    sentiments = []
+    for score in scores:
+        if score < -0.5:
+            sentiments.append("Negative")
+        elif score >= -0.5 and score < 0.2:
+            sentiments.append("Neutral")
+        else:
+            sentiments.append("Positive")
+    return sentiments
+
+
 def predict_sentiment(tweet):
     """
     tweet: list of strings or single string
@@ -64,9 +76,7 @@ def predict_sentiment(tweet):
 
     scores = [sum([results[i][k] * v for k, v in category2score_map.items()])
               for i in np.arange(n_tweets)]
-    sentiments = [max(results[i], key=results[i].get)
-                  for i in np.arange(n_tweets)]
-    scores = sentiment_standardizer(sentiments, scores)
+    sentiments = sentiment_calculator(scores)
 
     return sentiments, scores
 
