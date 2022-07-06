@@ -80,7 +80,7 @@ def predict_sentiment(tweet):
     sentiment_scores = [sum([results[i][k] * v for
                              k, v in category2score_map.items()])
                         for i in np.arange(n_tweets)]
-    sentiment_labels = sentiment_calculator(scores)
+    sentiment_labels = sentiment_calculator(sentiment_scores)
 
     return sentiment_scores, sentiment_labels
 
