@@ -1,9 +1,12 @@
-import streamlit as st
-from tweet_cleaner import *
 import os
+import streamlit as st
 import numpy as np
 import torch
-from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
+from transformers import (
+    pipeline,
+    AutoTokenizer,
+    AutoModelForSequenceClassification
+)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model_path = "cardiffnlp/twitter-roberta-base-sentiment-latest"
@@ -18,7 +21,7 @@ def load_model(path):
 
 
 tokenizer = AutoTokenizer.from_pretrained(
-    f"cardiffnlp/twitter-roberta-base-sentiment-latest")
+    "cardiffnlp/twitter-roberta-base-sentiment-latest")
 
 sentiment_model = load_model(model_path)
 
@@ -32,7 +35,7 @@ tweet_sentiment = pipeline('sentiment-analysis',
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
-def sentiment_standardizer(sentiments, scores):
+def sentiment_standardizer(sentiment_labels, sentiment_scores):
     """
     Ensures sentiment score and label are consistent,
     i.e. coerces neutral tweet to have -0.5 < score < 0.2
@@ -43,20 +46,21 @@ def sentiment_standardizer(sentiments, scores):
     Returns: standardized_score (list)
     """
     standardized_scores = [min(max(-0.5, score), 0.2) if sentiment ==
-                           'Neutral' else score for sentiment, score in zip(sentiments, scores)]
+                           'Neutral' else score for sentiment, score in
+                           zip(sentiment_labels, sentiment_scores)]
     return standardized_scores
 
 
-def sentiment_calculator(scores):
-    sentiments = []
-    for score in scores:
+def sentiment_calculator(sentiment_scores):
+    sentiment_labels = []
+    for score in sentiment_scores:
         if score < -0.5:
-            sentiments.append("Negative")
+            sentiment_labels.append("Negative")
         elif score >= -0.5 and score < 0.2:
-            sentiments.append("Neutral")
+            sentiment_labels.append("Neutral")
         else:
-            sentiments.append("Positive")
-    return sentiments
+            sentiment_labels.append("Positive")
+    return sentiment_labels
 
 
 def predict_sentiment(tweet):
@@ -68,17 +72,17 @@ def predict_sentiment(tweet):
     predicted_sentiments = tweet_sentiment(tweet)
     n_tweets = len(predicted_sentiments)
 
-    # results = [{self.sentiment_mapping[predicted_sentiments[i][label]["label"]]:
-    #             predicted_sentiments[i][label]["score"] for label in np.arange(3)} for i in np.arange(n_tweets)]
     results = [{predicted_sentiments[i][label]["label"]:
-                predicted_sentiments[i][label]["score"] for label in np.arange(3)}
+                predicted_sentiments[i][label]["score"]
+                for label in np.arange(3)}
                for i in np.arange(n_tweets)]
 
-    scores = [sum([results[i][k] * v for k, v in category2score_map.items()])
-              for i in np.arange(n_tweets)]
-    sentiments = sentiment_calculator(scores)
+    sentiment_scores = [sum([results[i][k] * v for
+                             k, v in category2score_map.items()])
+                        for i in np.arange(n_tweets)]
+    sentiment_labels = sentiment_calculator(scores)
 
-    return sentiments, scores
+    return sentiment_scores, sentiment_labels
 
 
 st.title('ADAPT - Social Media Analytics Demo')
