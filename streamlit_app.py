@@ -27,4 +27,10 @@ if __name__ == "__main__":
         Sentiment: {sentiments[0]}
 
         Score: {scores[0]}
+
+        Negative: -1 to -0.5
+
+        Neutral: -0.5 to 0.2
+
+        Positive: 0.2 to 1
         """)
