@@ -14,7 +14,7 @@ if __name__ == "__main__":
     print(os.listdir())
 
     st.title('ADAPT - Social Media Analytics Demo')
-    st.markdown("""Tweet Classification model""")
+    st.markdown("""Twitter-RoBERTa Sentiment Analysis model""")
     starting_text = st.text_area('Type in query...')
 
     if starting_text:
