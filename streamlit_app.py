@@ -1,7 +1,9 @@
 import os
+from bleach import clean
 import streamlit as st
 import numpy as np
 import torch
+from tweet_cleaner import *
 from transformers import (
     pipeline,
     AutoTokenizer,
@@ -85,6 +87,12 @@ def predict_sentiment(tweet):
     return sentiment_scores, sentiment_labels
 
 
+def clean_tweet(tweet):
+    tweet = cleaning(tweet)
+    tweet = tweet_element_remover(tweet)
+    return tweet
+
+
 st.title('ADAPT - Social Media Analytics Demo')
 st.markdown("""Twitter-RoBERTa Sentiment Analysis model""")
 starting_text = st.text_area('Type in query...')
@@ -92,10 +100,13 @@ starting_text = st.text_area('Type in query...')
 if starting_text:
 
     with st.spinner('Running model...'):
+        cleaned_text = clean_tweet(starting_text)
         sentiments, scores = predict_sentiment(
-            starting_text)
+            cleaned_text)
 
     st.markdown(f"""
+    Cleaned text: {cleaned_text}
+
     Sentiment: {sentiments[0]}
 
     Score: {scores[0]}
