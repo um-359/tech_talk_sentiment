@@ -36,6 +36,8 @@ def cleaning(tweet):
     tweet = re.sub(r'[\S\w]*Ø[\S\w]*', '', tweet)
     tweet = re.sub(r'[\S\w]*(‡|±|˜|€|œ)[\S\w]*', '', tweet)
     tweet = re.sub("&amp;", "and", tweet)
+    tweet = tweet.replace(":", "")
+    tweet = tweet.replace("_", " ")
 
     # Remove non-ASCII characters
     tweet = re.sub(r'[^\x00-\x7F]+', '', tweet)
