@@ -3,19 +3,21 @@ from bleach import clean
 import streamlit as st
 import numpy as np
 import torch
-from tweet_cleaner import *
 from transformers import (
     pipeline,
     AutoTokenizer,
     AutoModelForSequenceClassification
 )
+import emot
+from emot.emo_unicode import UNICODE_EMOJI, EMOTICONS_EMO
+from tweet_cleaner import *
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model_path = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 category2score_map = {"Negative": -1, "Neutral": 0, "Positive": 1}
 
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def load_model(path):
     model = AutoModelForSequenceClassification.from_pretrained(
         path)
@@ -87,7 +89,21 @@ def predict_sentiment(tweet):
     return sentiment_scores, sentiment_labels
 
 
+def convert_emojis_emoticons(text):
+    emot_obj = emot.core.emot()
+    emoji_obj_dict = emot_obj.emoji(text)
+    emoticon_obj_dict = emot_obj.emoticons(text)
+
+    for emoji in emoji_obj_dict["value"]:
+        text = text.replace(emoji, UNICODE_EMOJI[emoji])
+
+    for emoticon in emoticon_obj_dict["value"]:
+        text = text.replace(emoticon, EMOTICONS_EMO[emoticon])
+    return text
+
+
 def clean_tweet(tweet):
+    tweet = convert_emojis_emoticons(tweet)
     tweet = cleaning(tweet)
     tweet = tweet_element_remover(tweet)
     return tweet
