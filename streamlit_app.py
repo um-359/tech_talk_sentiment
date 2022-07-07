@@ -107,9 +107,13 @@ if starting_text:
     st.markdown(f"""
     Cleaned text: {cleaned_text}
 
+    ---
+
     Sentiment: {sentiments[0]}
 
     Score: {scores[0]}
+
+    ---
 
     Negative: -1 to -0.5
 
