@@ -95,7 +95,7 @@ def clean_tweet(tweet):
 
 st.title('ADAPT - Social Media Analytics Demo')
 st.markdown("""Twitter-RoBERTa Sentiment Analysis model""")
-starting_text = st.text_area('Type in query...')
+starting_text = st.text_area('Type in text...')
 
 if starting_text:
 
