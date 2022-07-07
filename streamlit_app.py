@@ -109,9 +109,9 @@ if starting_text:
 
     ---
 
-    Sentiment: {sentiments[0]}
+    Predicted sentiment: {scores[0]}
 
-    Score: {scores[0]}
+    Sentiment Score: {sentiments[0]}
 
     ---
 
