@@ -91,7 +91,8 @@ def tweet_element_remover(tweet):
     tweet = re.sub('http\S+', '', tweet)
 
     # Remove users
-    tweet = re.sub("(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)", "", tweet)
+    tweet = re.sub(
+        "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)", "", tweet)
 
     # Remove # characters, keep words
     tweet = re.sub('#', ' ', tweet)

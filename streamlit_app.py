@@ -9,7 +9,8 @@ from transformers import (
     AutoModelForSequenceClassification
 )
 import emot
-from emot.emo_unicode import UNICODE_EMOJI, EMOTICONS_EMO
+from emot.emo_unicode import EMOTICONS_EMO
+import emoji
 from tweet_cleaner import *
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -91,11 +92,9 @@ def predict_sentiment(tweet):
 
 def convert_emojis_emoticons(text):
     emot_obj = emot.core.emot()
-    emoji_obj_dict = emot_obj.emoji(text)
     emoticon_obj_dict = emot_obj.emoticons(text)
 
-    for emoji in emoji_obj_dict["value"]:
-        text = text.replace(emoji, UNICODE_EMOJI[emoji])
+    emoji.demojize(text, delimiters=("", ""))
 
     for emoticon in emoticon_obj_dict["value"]:
         text = text.replace(emoticon, EMOTICONS_EMO[emoticon])
